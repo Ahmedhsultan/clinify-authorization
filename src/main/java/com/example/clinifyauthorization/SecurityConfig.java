@@ -1,5 +1,6 @@
 package com.example.clinifyauthorization;
 
+import com.example.clinifyauthorization.service.security.CustomAuthProvider;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -12,9 +13,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
@@ -58,12 +61,20 @@ import java.util.function.Consumer;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@EnableJpaRepositories
+//@EnableJpaRepositories
 public class SecurityConfig {
 /*
     http://localhost:9090/oauth2/authorize?response_type=code&client_id=iti-client&scope=openid&redirect_uri=https://springone.io/authorized&code_challenge=QYPAZ5NU8yvtlQ9erXrUYR-T5AGCjCF47vN-KsaI2A8&code_challenge_method=S256
     http://localhost:9090/oauth2/token?client_id=iti-client&redirect_uri=https://springone.io/authorized&grant_type=authorization_code&code=7xxUxM1QJ1YfIzBAoKp-8O8g3toURX13fbyPT-hXvSv95GKvtGa-_6OzeIFeaWC_tzB4sFOOw_QZNcddapgcnV6VHHSVmfbZlWjx02iIamYgos6YrI_hLJPT5XN1WXrv&code_verifier=qPsH306-ZDDaOE8DFzVn05TkN3ZZoVmI_6x4LsVglQI
 */
+
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http, CustomAuthProvider customAuthenticationProvider) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.authenticationProvider(customAuthenticationProvider);
+        return authenticationManagerBuilder.build();
+    }
 
     @Bean
     @Order(0)

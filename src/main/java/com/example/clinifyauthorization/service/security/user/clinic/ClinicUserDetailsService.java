@@ -1,9 +1,7 @@
 package com.example.clinifyauthorization.service.security.user.clinic;
 
 import com.example.clinifyauthorization.persistence.entity.Clinic;
-import com.example.clinifyauthorization.persistence.entity.Patient;
 import com.example.clinifyauthorization.persistence.reposatory.ClinicRepository;
-import com.example.clinifyauthorization.persistence.reposatory.PatientRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,10 +15,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class ClinicUserDetailsService implements UserDetailsService {
     private ClinicRepository clinicRepository;
 
-    public CustomUserDetailsService (ClinicRepository clinicRepository){
+    public ClinicUserDetailsService(ClinicRepository clinicRepository){
         this.clinicRepository = clinicRepository;
     }
 
