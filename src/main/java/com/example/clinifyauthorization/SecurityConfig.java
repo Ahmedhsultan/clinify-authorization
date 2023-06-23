@@ -5,13 +5,18 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
@@ -32,12 +37,15 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationEntryPointFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.io.IOException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
@@ -50,6 +58,7 @@ import java.util.function.Consumer;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
+@EnableJpaRepositories
 public class SecurityConfig {
 /*
     http://localhost:9090/oauth2/authorize?response_type=code&client_id=iti-client&scope=openid&redirect_uri=https://springone.io/authorized&code_challenge=QYPAZ5NU8yvtlQ9erXrUYR-T5AGCjCF47vN-KsaI2A8&code_challenge_method=S256
@@ -57,12 +66,13 @@ public class SecurityConfig {
 */
 
     @Bean
+    @Order(0)
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(List.of("*"));
+        config.setAllowedOriginPatterns(List.of("**","*"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
@@ -74,18 +84,20 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain asSecurityFilterChain(HttpSecurity http) throws Exception {
         OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
-
+        http.cors(withDefaults());
         http.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
                 .authorizationEndpoint(
                     a -> a.authenticationProviders(getAuthorizationEndpointProviders())
                 )
                 .oidc(withDefaults());
 
-        http.exceptionHandling(
-            e -> e.authenticationEntryPoint(
-                new LoginUrlAuthenticationEntryPoint("/login")
-            )
-        );
+//        http.exceptionHandling(
+//            e -> e.authenticationEntryPoint(
+//                new LoginUrlAuthenticationEntryPoint("/login")
+//            )
+//        );
+
+//        http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
 
         return http.build();
     }
@@ -103,27 +115,32 @@ public class SecurityConfig {
     @Bean
     @Order(2)
     public SecurityFilterChain appSecurityFilterChain(HttpSecurity http) throws Exception {
+        AuthenticationFailureHandler authenticationFailureHandler = new AuthenticationFailureHandler() {
+            @Override
+            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        };
+
         http.authorizeHttpRequests((authorize) -> authorize
-                .requestMatchers("/test","/success","/fail").permitAll()
                 .anyRequest().authenticated()
         ).formLogin(form -> form
-//                .loginPage("/test")
-//                .loginProcessingUrl("/proccess")
                 .defaultSuccessUrl("/success")
-                .failureUrl("/fail")
-        ).csrf((csrf) -> csrf.disable());
+                .failureHandler(authenticationFailureHandler)
+        ).csrf((csrf) -> csrf.disable())
+        .cors(withDefaults());
 
         return http.build();
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        var u1 = User.withUsername("user")
-                .password("1234")
-                .build();
-
-        return new InMemoryUserDetailsManager(u1);
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        var u1 = User.withUsername("user@gmail.com")
+//                .password("123456")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(u1);
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -138,13 +155,12 @@ public class SecurityConfig {
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
-                .redirectUri("https://springone.io/authorized")
-                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("http://localhost:4200/login")
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .tokenSettings(
                         TokenSettings.builder()
-                                .accessTokenFormat(OAuth2TokenFormat.REFERENCE)
+                                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
                                 .accessTokenTimeToLive(Duration.ofSeconds(900))
                                 .build()
                 )
