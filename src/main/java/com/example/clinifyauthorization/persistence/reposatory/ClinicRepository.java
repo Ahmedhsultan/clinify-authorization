@@ -1,8 +1,6 @@
 package com.example.clinifyauthorization.persistence.reposatory;
 
 import com.example.clinifyauthorization.persistence.entity.Clinic;
-import com.example.clinifyauthorization.persistence.entity.Patient;
-import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 

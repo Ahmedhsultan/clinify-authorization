@@ -3,9 +3,7 @@ package com.example.clinifyauthorization.util.mapper;
 import com.example.clinifyauthorization.persistence.dtos.AreaDto;
 import com.example.clinifyauthorization.persistence.dtos.CityDto;
 import com.example.clinifyauthorization.persistence.dtos.ClinicDto;
-import com.example.clinifyauthorization.persistence.dtos.PatientDto;
 import com.example.clinifyauthorization.persistence.entity.Clinic;
-import com.example.clinifyauthorization.persistence.entity.Patient;
 
 public class ClinicMapper {
     public static ClinicDto toDto(Clinic clinic){

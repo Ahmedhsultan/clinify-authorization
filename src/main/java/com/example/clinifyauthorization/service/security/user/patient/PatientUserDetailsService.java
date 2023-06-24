@@ -1,7 +1,6 @@
 package com.example.clinifyauthorization.service.security.user.patient;
 
 import com.example.clinifyauthorization.persistence.entity.Patient;
-import com.example.clinifyauthorization.persistence.reposatory.ClinicRepository;
 import com.example.clinifyauthorization.persistence.reposatory.PatientRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
