@@ -39,11 +39,11 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Modify the cookie settings
         ResponseCookie cookie = ResponseCookie.from("JSESSIONID", cookieValue) // key & value
-                .httpOnly(true)
+//                .httpOnly(true)
                 .secure(true)
                 //    .domain("localhost")  // host
                 //    .path("/")      // path
-                .maxAge(Duration.ofHours(1))
+//                .maxAge(Duration.ofHours(1))
                 .sameSite("none")  // sameSite
                 .build();
 
@@ -51,8 +51,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         Cookie cookie1 = new Cookie("JSESSIONID", cookieValue);
+        cookie1.setAttribute("SameSite","none");
         response.addCookie(cookie1);
+
         // Redirect to the default success URL
-        redirectStrategy.sendRedirect(request, response, "/user/data");
+//        redirectStrategy.sendRedirect(request, response, "/user/data");
     }
 }
