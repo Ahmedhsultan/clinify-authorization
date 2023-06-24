@@ -1,6 +1,7 @@
 package com.example.clinifyauthorization;
 
 import com.example.clinifyauthorization.service.security.CustomAuthProvider;
+import com.example.clinifyauthorization.service.security.CustomAuthenticationSuccessHandler;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -33,6 +34,7 @@ import org.springframework.security.oauth2.server.authorization.settings.OAuth2T
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -127,6 +129,7 @@ public class SecurityConfig {
         ).formLogin(form -> form
                 .defaultSuccessUrl("/userData")
                 .failureHandler(authenticationFailureHandler)
+                .successHandler(new CustomAuthenticationSuccessHandler())
         ).csrf((csrf) -> csrf.disable())
         .cors(withDefaults());
 
