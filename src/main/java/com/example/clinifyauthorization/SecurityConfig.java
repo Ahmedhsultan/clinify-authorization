@@ -136,7 +136,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                 .anyRequest().authenticated()
         ).formLogin(form -> form
-                .defaultSuccessUrl("/success")
+                .defaultSuccessUrl("/userData")
                 .failureHandler(authenticationFailureHandler)
         ).csrf((csrf) -> csrf.disable())
         .cors(withDefaults());

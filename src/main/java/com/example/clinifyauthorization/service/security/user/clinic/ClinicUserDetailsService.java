@@ -37,7 +37,7 @@ public class ClinicUserDetailsService implements UserDetailsService {
         Clinic clinic = optionalClinic.orElseThrow(() -> new UsernameNotFoundException(":("));
         var patientAuthorities = List.of(new SimpleGrantedAuthority("CLINIC"));
 
-        return new User(username, clinic.getPassword(), patientAuthorities);
+        return new User(clinic.getEmail(), clinic.getPassword(), patientAuthorities);
     }
 
     private static boolean isEmail(String input) {

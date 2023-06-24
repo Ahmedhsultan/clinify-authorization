@@ -38,7 +38,7 @@ public class PatientUserDetailsService implements UserDetailsService {
         Patient patient = optionalPatient.orElseThrow(() -> new UsernameNotFoundException(":("));
         var patientAuthorities = List.of(new SimpleGrantedAuthority("PATIENT"));
 
-        return new User(username, patient.getPassword(), patientAuthorities);
+        return new User(patient.getEmail(), patient.getPassword(), patientAuthorities);
     }
 
     private static boolean isEmail(String input) {
