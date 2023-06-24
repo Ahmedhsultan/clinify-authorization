@@ -24,7 +24,6 @@ public class ClinicMapper {
                 .email(clinic.getEmail())
                 .city(cityDto)
                 .area(areaDto)
-                .password(clinic.getPassword())
                 .isDeleted(clinic.getIsDeleted())
                 .phoneNumber(clinic.getPhoneNumber())
                 .status(clinic.getStatus())

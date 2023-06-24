@@ -20,7 +20,6 @@ public class PatientDto extends BaseDto {
     AreaDto area;
     CityDto city;
     String phoneNumber;
-    String password;
     String fullName;
     String email;
     Date birthDate;

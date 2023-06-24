@@ -24,7 +24,6 @@ public class PatientMapper {
                 .email(patient.getEmail())
                 .city(cityDto)
                 .area(areaDto)
-                .password(patient.getPassword())
                 .gender(patient.getGender())
                 .fullName(patient.getFullName())
                 .birthDate(patient.getBirthDate())

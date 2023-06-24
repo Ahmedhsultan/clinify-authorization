@@ -17,7 +17,6 @@ public class ClinicDto extends BaseDto {
     AreaDto area;
     CityDto city;
     String username;
-    String password;
     String name;
     String phoneNumber;
     String email;
