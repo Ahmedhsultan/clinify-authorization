@@ -24,7 +24,7 @@ public class TestController {
     @Autowired
     private ClinicRepository clinicRepository;
 
-    @GetMapping("/userData")
+    @GetMapping("/user/data")
     public ResponseEntity<BaseDto> getPatientProfile(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();

@@ -127,7 +127,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                 .anyRequest().authenticated()
         ).formLogin(form -> form
-                .defaultSuccessUrl("/userData")
+                .defaultSuccessUrl("/user/data")
                 .failureHandler(authenticationFailureHandler)
                 .successHandler(new CustomAuthenticationSuccessHandler())
         ).csrf((csrf) -> csrf.disable())

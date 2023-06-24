@@ -7,12 +7,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.web.DefaultRedirectStrategy;
+import org.springframework.security.web.RedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 import java.io.IOException;
 import java.time.Duration;
 
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
+    private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -46,5 +49,10 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
         // Response to the client
         response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        Cookie cookie1 = new Cookie("JSESSIONID", cookieValue);
+        response.addCookie(cookie1);
+        // Redirect to the default success URL
+        redirectStrategy.sendRedirect(request, response, "/user/data");
     }
 }
