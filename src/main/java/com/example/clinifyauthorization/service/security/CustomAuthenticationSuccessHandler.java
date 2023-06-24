@@ -55,6 +55,6 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         response.addCookie(cookie1);
 
         // Redirect to the default success URL
-//        redirectStrategy.sendRedirect(request, response, "/user/data");
+        redirectStrategy.sendRedirect(request, response, "/user/data");
     }
 }
