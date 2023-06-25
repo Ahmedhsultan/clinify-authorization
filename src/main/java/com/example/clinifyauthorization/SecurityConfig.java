@@ -33,6 +33,8 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+import org.springframework.security.oauth2.server.authorization.token.JwtEncodingContext;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -154,28 +156,42 @@ public class SecurityConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-//        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository();
 
         RegisteredClient r1 = RegisteredClient.withId(UUID.randomUUID().toString())
-                .clientId("iti-client")
-                .clientSecret(passwordEncoder().encode("iti-secret"))
+                .clientId("iti-clinic")
+                .clientSecret(passwordEncoder().encode("iti-clinic-martina"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-                .scope(OidcScopes.OPENID)
-                .scope(OidcScopes.PROFILE)
-                .redirectUri("http://localhost:4200/login")
+                .scope("CLINIC")
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
                 .tokenSettings(
                         TokenSettings.builder()
                                 .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
-                                .accessTokenTimeToLive(Duration.ofSeconds(900))
+                                .accessTokenTimeToLive(Duration.ofDays(30))
                                 .build()
                 )
                 .build();
 
-//        iRegisteredClientRepository.save(r1);
 
-        return new InMemoryRegisteredClientRepository(r1);
+        RegisteredClient r2 = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("iti-patient")
+                .clientSecret(passwordEncoder().encode("iti-patient-martina"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .scope("PATIENT")
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .tokenSettings(
+                        TokenSettings.builder()
+                                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                                .accessTokenTimeToLive(Duration.ofDays(30))
+                                .build()
+                )
+                .build();
+        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository(r1);
+
+        iRegisteredClientRepository.save(r2);
+
+        return iRegisteredClientRepository;
     }
 
     @Bean
@@ -202,12 +218,12 @@ public class SecurityConfig {
         return new ImmutableJWKSet(set);
     }
 
-//    @Bean
-//    public OAuth2TokenCustomizer<JwtEncodingContext> oAuth2TokenCustomizer() {
-//        return  context -> {
-//            var authorities = context.getPrincipal().getAuthorities();
-//
-//            context.getClaims().claim("authorities", authorities.stream().map(a -> a.getAuthority()).toList());
-//        };
-//    }
+    @Bean
+    public OAuth2TokenCustomizer<JwtEncodingContext> oAuth2TokenCustomizer() {
+        return  context -> {
+            var authorities = context.getRegisteredClient().getScopes();
+
+            context.getClaims().claim("scope", authorities.stream().map(a -> a).toList());
+        };
+    }
 }
