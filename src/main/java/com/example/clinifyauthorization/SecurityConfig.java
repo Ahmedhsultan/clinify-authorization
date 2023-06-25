@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -127,9 +128,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authorize) -> authorize
                 .anyRequest().authenticated()
         ).formLogin(form -> form
-                .defaultSuccessUrl("/user/data")
+                .defaultSuccessUrl("/success")
                 .failureHandler(authenticationFailureHandler)
-                .successHandler(new CustomAuthenticationSuccessHandler())
+//                .successHandler(new CustomAuthenticationSuccessHandler())
         ).csrf((csrf) -> csrf.disable())
         .cors(withDefaults());
 
@@ -152,6 +153,8 @@ public class SecurityConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
+        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository();
+
         RegisteredClient r1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("iti-client")
                 .clientSecret("iti-secret")
@@ -169,7 +172,9 @@ public class SecurityConfig {
                 )
                 .build();
 
-        return new InMemoryRegisteredClientRepository(r1);
+        iRegisteredClientRepository.save(r1);
+
+        return iRegisteredClientRepository;
     }
 
     @Bean
