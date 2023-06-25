@@ -187,9 +187,25 @@ public class SecurityConfig {
                                 .build()
                 )
                 .build();
-        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository(r1);
 
+        RegisteredClient r3 = RegisteredClient.withId(UUID.randomUUID().toString())
+                .clientId("iti-admin")
+                .clientSecret(passwordEncoder().encode("iti-admin-martina"))
+                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                .scope("ADMIN")
+                .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
+                .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
+                .tokenSettings(
+                        TokenSettings.builder()
+                                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED)
+                                .accessTokenTimeToLive(Duration.ofDays(30))
+                                .build()
+                )
+                .build();
+
+        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository(r1);
         iRegisteredClientRepository.save(r2);
+        iRegisteredClientRepository.save(r3);
 
         return iRegisteredClientRepository;
     }
