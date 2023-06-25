@@ -152,7 +152,7 @@ public class SecurityConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository();
+//        var iRegisteredClientRepository = new InMemoryRegisteredClientRepository();
 
         RegisteredClient r1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("iti-client")
@@ -171,7 +171,7 @@ public class SecurityConfig {
                 )
                 .build();
 
-        iRegisteredClientRepository.save(r1);
+//        iRegisteredClientRepository.save(r1);
 
         return new InMemoryRegisteredClientRepository(r1);
     }
