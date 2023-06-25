@@ -158,7 +158,7 @@ public class SecurityConfig {
 
         RegisteredClient r1 = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("iti-client")
-                .clientSecret("iti-secret")
+                .clientSecret(passwordEncoder().encode("iti-secret"))
                 .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
                 .scope(OidcScopes.OPENID)
                 .scope(OidcScopes.PROFILE)
