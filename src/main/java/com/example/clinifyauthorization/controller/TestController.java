@@ -46,9 +46,9 @@ public class TestController {
         return ResponseEntity.badRequest().body(null);
     }
 
-//    @GetMapping("test")
-//    public String method() {
-//        System.out.println("test");
-//        return "ok";
-//    }
+    @GetMapping("success")
+    public ResponseEntity success() {
+        System.out.println("success");
+        return ResponseEntity.ok().build();
+    }
 }
