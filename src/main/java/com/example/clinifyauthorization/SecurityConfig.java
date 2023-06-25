@@ -125,6 +125,7 @@ public class SecurityConfig {
         };
 
         http.authorizeHttpRequests((authorize) -> authorize
+                .requestMatchers("/success").permitAll()
                 .anyRequest().authenticated()
         ).formLogin(form -> form
                 .defaultSuccessUrl("/success")
